@@ -2,19 +2,25 @@
   "name": "wicket-control",
   "version": "0.1.0",
   "description": "Control server and modified Firestorm server for controlling Croquetia wickets",
+  "type": "module",
   "scripts": {
-    "build": "tsc -p src/",
+    "build": "tsc",
     "clean": "rm -rf node_modules build",
-    "broker": "node build/message-broker.js"
+    "broker": "node build/message-broker.js",
+    "firestorm": "PORT=$(grep FIRESTORM_PORT .env | cut -d'=' -f2) yarn --cwd Firestorm server",
+    "dev": "npm run build && npm run broker"
   },
   "author": "Jon Cohen (jon@joncohen.dev)",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.0.1",
+    "node-fetch": "^3.2.4",
     "ws": "^8.7.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.35",
+    "@types/node-fetch": "^2.6.1",
+    "@types/ws": "^8.5.3",
     "typescript": "^4.7.2"
   }
 }
