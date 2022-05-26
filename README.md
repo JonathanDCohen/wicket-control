@@ -11,14 +11,17 @@ Make sure that Node, NPM, and Yarn are installed on your device.
 npm install
 
 # Start a Firestorm server.  This doesn't require any Pixelblazes on the wifi network
-npm run firestorm
+npm run firestorm:build
+npm run firestorm:run
+```
 
+Then in a different terminal:
+```
 # Build and start the broker server
 npm run dev
-
-# Run a test client
-npm run testclient
 ```
+
+To run a test client, open a third terminal and run `npm run testclient`
 
 ## Data Format
 

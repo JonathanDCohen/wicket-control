@@ -7,7 +7,8 @@
     "build": "tsc",
     "clean": "rm -rf node_modules build",
     "broker": "node build/message-broker.js",
-    "firestorm": "PORT=$(grep FIRESTORM_PORT .env | cut -d'=' -f2) yarn --cwd Firestorm server",
+    "firestorm:build": "pushd CroquetiaFirestorm && yarn && yarn build && popd",
+    "firestorm:run": "pushd CroquetiaFirestorm && PORT=$(grep FIRESTORM_PORT ../.env | cut -d'=' -f2) yarn server && popd",
     "dev": "npm run build && npm run broker",
     "testclient": "node build/test-client.js"
   },
