@@ -8,6 +8,23 @@ export type DataSource = {
   };
 };
 
+// Just an example
+export type TestDataSource = {
+  source: 'test',
+  data: {
+    field: number
+  }
+}
+
+export function newTestDataSource(field: number): TestDataSource {
+  return {
+    source: 'test',
+    data: {
+      field
+    }
+  };
+}
+
 // type SoundDataSource = {
 // 	source: 'sound'
 //   data: {
@@ -21,6 +38,7 @@ export type DataSource = {
 //   data: {
 //     position: number[]
 //     angularMomentum: number[]
+//     ...
 //   }
 // }
 

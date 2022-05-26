@@ -8,5 +8,8 @@ ws.on('open', function open() {
   ws.send(JSON.stringify(dataSource.HalfwayPointReached()));
   ws.send(JSON.stringify(dataSource.EndWicketReached()));
   ws.send(JSON.stringify(dataSource.EndWicketReached()));
+  ws.send(JSON.stringify(dataSource.newTestDataSource(Math.random())));
+  ws.send(JSON.stringify(dataSource.newTestDataSource(Math.random())));
+  ws.send(JSON.stringify(dataSource.newTestDataSource(Math.random())));
   ws.close();
 });

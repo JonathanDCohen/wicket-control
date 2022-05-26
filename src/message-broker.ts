@@ -57,6 +57,8 @@ class CroquetiaMessageBroker {
               return this.handleHalfwayPointReached();
             case "endwicketreached":
               return this.handleEndWicketReached();
+            case "test":
+              return this.handleTestDataSource(message);
           }
         });
       });
@@ -85,6 +87,10 @@ class CroquetiaMessageBroker {
       console.dir('Booped the end wicket.');
     }
     // this.firestorm.command(blahblahblah)
+  }
+
+  private async handleTestDataSource(data: dataSources.TestDataSource): Promise<void> {
+    console.dir(`test data source: ${data.data.field}`);
   }
 }
 

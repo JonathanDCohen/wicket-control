@@ -8,7 +8,8 @@
     "clean": "rm -rf node_modules build",
     "broker": "node build/message-broker.js",
     "firestorm": "PORT=$(grep FIRESTORM_PORT .env | cut -d'=' -f2) yarn --cwd Firestorm server",
-    "dev": "npm run build && npm run broker"
+    "dev": "npm run build && npm run broker",
+    "testclient": "node build/test-client.js"
   },
   "author": "Jon Cohen (jon@joncohen.dev)",
   "license": "MIT",
