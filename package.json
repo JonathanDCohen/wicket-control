@@ -3,11 +3,18 @@
   "version": "0.1.0",
   "description": "Control server and modified Firestorm server for controlling Croquetia wickets",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -p src/",
+    "clean": "rm -rf node_modules build",
+    "broker": "node build/message-broker.js"
   },
   "author": "Jon Cohen (jon@joncohen.dev)",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^16.0.1",
     "ws": "^8.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.35",
+    "typescript": "^4.7.2"
   }
 }
