@@ -59,6 +59,8 @@ class CroquetiaMessageBroker {
               return this.handleEndWicketReached();
             case "test":
               return this.handleTestDataSource(message);
+            default:
+              console.dir(JSON.stringify(message));
           }
         });
       });
