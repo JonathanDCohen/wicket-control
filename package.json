@@ -1,0 +1,13 @@
+{
+  "name": "wicket-control",
+  "version": "0.1.0",
+  "description": "Control server and modified Firestorm server for controlling Croquetia wickets",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jon Cohen (jon@joncohen.dev)",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.7.0"
+  }
+}
