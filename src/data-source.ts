@@ -16,7 +16,7 @@ export type TestDataSource = {
   }
 }
 
-export function newTestDataSource(field: number): TestDataSource {
+export function colorPickerDataSource(field: number): TestDataSource {
   return {
     source: 'test',
     data: {
@@ -62,4 +62,10 @@ export function EndWicketReached() {
   return {
     source: "endwicketreached",
   };
+}
+
+export function ReDiscoverPixelblazes() {
+  return {
+    source: "discover",
+  }
 }

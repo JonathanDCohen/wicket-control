@@ -45,21 +45,82 @@ type DiscoveryJSON = {
  */
 type DiscoverResponseJSON = DiscoveryJSON[];
 
+type CommandJSON = {
+  [k: string]: any;
+}
+
+type CommandRequestJSON = {
+  "command": CommandJSON,
+  "ids": number[]
+};
+
 /**
  * Wraps the Firestorm API.
  */
 export class Firestorm {
+  private discoveredPixelblazeIds: number[] = [];
   public constructor(private hostname: string, private port: number) {}
 
+  public async init() {
+    await this.discover();
+  }
+
+  private firestormUrl(): string {
+    return `http://${this.hostname}:${this.port}`;
+  }
+
+  /**
+   * Prompts Pixelblaze discovery and saves discovered pixelblaze IDs.
+   * @returns A list of discovered Pixelblazes and their properites
+   */
   public async discover(): Promise<DiscoverResponseJSON> {
+    console.log('discover')
     const response = await fetch(
-      `http://${this.hostname}:${this.port}/discover`
+      `${this.firestormUrl()}/discover`
     );
     try {
       checkStatus(response);
     } catch (err: any) {
       return Promise.reject(err);
     }
-    return (await response.json()) as DiscoverResponseJSON;
+    
+    const discoveries = (await response.json()) as DiscoverResponseJSON;
+    this.discoveredPixelblazeIds = discoveries.map(v => v.id);
+    return discoveries;
   }
+
+  public async setVars(vars: {[k: string]: any}): Promise<void> {
+    return this.sendCommand({
+      "setVars": {
+        ...vars
+      }
+    });
+  }
+
+  private async sendCommand(command: CommandJSON): Promise<void> {
+    return this.command({
+      command,
+      ids: this.discoveredPixelblazeIds
+    });
+  }
+
+  /**
+   * Low level interface which passes through JSON
+   * @param command The request body passed through to each PixelBlaze and the list of Pixelblazes to pass to
+   */
+  public async command(command: CommandRequestJSON): Promise<void> {
+    console.log('command', JSON.stringify(command))
+    const response = await fetch(
+      `${this.firestormUrl()}/command`,
+      {
+        method: 'post',
+        body: JSON.stringify(command),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+  }
+
+
 }

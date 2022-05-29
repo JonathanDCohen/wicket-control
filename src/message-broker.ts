@@ -73,26 +73,28 @@ class CroquetiaMessageBroker {
   private async handleStartGame(): Promise<void> {
     this.gameActive = true;
     console.dir('Game started!');
-    // this.firestorm.command(blahblahblah)
+    await this.firestorm.setVars({'colorHue': 0});
   }
 
   private async handleHalfwayPointReached(): Promise<void> {
     console.dir('Halfway point reached!');
-    // this.firestorm.command(blahblahblah)
+    await this.firestorm.setVars({'colorHue': 1/3});
   }
 
   private async handleEndWicketReached(): Promise<void> {
     if (this.gameActive) {
       console.dir('You win!');
       this.gameActive = false;
+      await this.firestorm.setVars({'colorHue': 2/3});
     } else {
       console.dir('Booped the end wicket.');
+      await this.firestorm.setVars({'colorHue': 1});
     }
-    // this.firestorm.command(blahblahblah)
   }
 
   private async handleTestDataSource(data: dataSources.TestDataSource): Promise<void> {
     console.dir(`test data source: ${data.data.field}`);
+    await this.firestorm.setVars({'colorHue': data.data.field});
   }
 }
 
