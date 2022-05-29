@@ -57,8 +57,8 @@ class CroquetiaMessageBroker {
               return this.handleHalfwayPointReached();
             case "endwicketreached":
               return this.handleEndWicketReached();
-            case "test":
-              return this.handleTestDataSource(message);
+            case "colorpicker":
+              return this.handleColorPickerDataSource(message);
             default:
               console.dir(JSON.stringify(message));
           }
@@ -92,9 +92,9 @@ class CroquetiaMessageBroker {
     }
   }
 
-  private async handleTestDataSource(data: dataSources.TestDataSource): Promise<void> {
-    console.dir(`test data source: ${data.data.field}`);
-    await this.firestorm.setVars({'colorHue': data.data.field});
+  private async handleColorPickerDataSource(message: dataSources.ColorPickerDataSource): Promise<void> {
+    console.dir(`test data source: ${message.data.hue}`);
+    await this.firestorm.setVars({'colorHue': message.data.hue});
   }
 }
 

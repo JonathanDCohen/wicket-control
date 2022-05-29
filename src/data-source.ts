@@ -8,30 +8,45 @@ export type DataSource = {
   };
 };
 
-// Just an example
-export type TestDataSource = {
-  source: 'test',
+// An example data source where the hue value for the strip is sent.
+export type ColorPickerDataSource = {
+  source: 'colorpicker',
   data: {
-    field: number
+    hue: number
   }
 }
 
-export function colorPickerDataSource(field: number): TestDataSource {
+export function colorPickerDataSource(field: number): ColorPickerDataSource {
   return {
-    source: 'test',
+    source: 'colorpicker',
     data: {
-      field
+      hue: field
     }
   };
 }
 
-// type SoundDataSource = {
-// 	source: 'sound'
-//   data: {
-//     frequencyData: number[]
-//     //...
-//   }
-// }
+type SoundDataSource = {
+	source: 'sound'
+  data: {
+    /**
+     * A 32-element array of average frequency magnitudes.  
+     * Middle C is around frequencyData[7].  See bhence.com/pixelblaze-sensor-expansion for specific bin center frrequencies.
+     */
+    frequencyData: number[],
+    /**
+     * Total audio volume.  See documentation for mapping from dbA measurements to energyAverage values
+     */
+    energyAverage: number,
+    /**
+     * The strongest frequency, in Hz, with a resolution of ~39 Hz.
+     */
+    maxFrequency: number,
+    /**
+     * The magnitude of the strongest frequency.  Scaled the same as energyAverage?
+     */
+    maxFrequencyMagnitude
+  }
+}
 
 // type DragonStaffDataSource = {
 //   source: 'dragonstaff',
