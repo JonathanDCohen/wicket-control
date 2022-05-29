@@ -119,7 +119,8 @@ export class Firestorm {
           'Content-Type': 'application/json'
         }
       }
-    )
+    );
+    checkStatus(response);
   }
 
 
