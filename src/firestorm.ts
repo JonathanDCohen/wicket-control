@@ -97,10 +97,10 @@ export class Firestorm {
     });
   }
 
-  private async sendCommand(command: CommandJSON): Promise<void> {
+  public async sendCommand(command: CommandJSON, ids?: number[]): Promise<void> {
     return this.command({
       command,
-      ids: this.discoveredPixelblazeIds
+      ids: ids ?? this.discoveredPixelblazeIds
     });
   }
 
