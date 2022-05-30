@@ -25,6 +25,23 @@ export function colorPickerDataSource(field: number): ColorPickerDataSource {
   };
 }
 
+// TODO this isn't right but it works for now
+export type ProgramNameDataSource = {
+  source: 'programname',
+  data: {
+    programName: string
+  }
+}
+
+export function programNameDataSource(programName: string): ProgramNameDataSource {
+  return {
+    source: 'programname',
+    data: {
+      programName
+    }
+  };
+}
+
 type SoundDataSource = {
 	source: 'sound'
   data: {

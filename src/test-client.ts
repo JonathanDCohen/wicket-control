@@ -15,6 +15,8 @@ ws.on('open', function open() {
     ws.send(JSON.stringify(dataSource.ReDiscoverPixelblazes()));
   } else if (Number.parseFloat(command)) { // boooooo you can't assign in an if conditional
     ws.send(JSON.stringify(dataSource.colorPickerDataSource(Number.parseFloat(command))));
+  } else if (command === 'pickhue') {
+    ws.send(JSON.stringify(dataSource.programNameDataSource('ColorFromVar')));
   } else {
     ws.send(JSON.stringify(dataSource.colorPickerDataSource(Math.random())));
   }

@@ -97,6 +97,18 @@ export class Firestorm {
     });
   }
 
+  public async setProgramName(programName: string): Promise<void> {
+    return this.sendCommand({
+      programName
+    });
+  }
+
+  /**
+   * Send a command using the Pixelblaze Websocket API to the selected pixelblazes
+   * @param command Object representing a command to be sent to the pixelblazes
+   * @param ids If present, the ids of the Pixelblazes to send the command to.  Defaults to every known Pixelblaze.
+   * @returns 
+   */
   public async sendCommand(command: CommandJSON, ids?: number[]): Promise<void> {
     return this.command({
       command,
@@ -108,7 +120,7 @@ export class Firestorm {
    * Low level interface which passes through JSON
    * @param command The request body passed through to each PixelBlaze and the list of Pixelblazes to pass to
    */
-  public async command(command: CommandRequestJSON): Promise<void> {
+  private async command(command: CommandRequestJSON): Promise<void> {
     console.log('command', JSON.stringify(command))
     const response = await fetch(
       `${this.firestormUrl()}/command`,

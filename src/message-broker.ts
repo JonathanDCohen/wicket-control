@@ -51,6 +51,7 @@ class CroquetiaMessageBroker {
             console.error(`message ${JSON.stringify(message)} is not a valid data source`)
           }
           switch (message.source) {
+            // TODO the game specific ones should come from "game" source and the events should be data fields
             case "gamestarted":
                 return this.handleStartGame();
             case "halfwaypointreached":
@@ -59,6 +60,9 @@ class CroquetiaMessageBroker {
               return this.handleEndWicketReached();
             case "colorpicker":
               return this.handleColorPickerDataSource(message);
+            // TODO this should be a field, not a data source.  
+            case "programname":
+              return this.handleProgramNameDataSource(message);
             default:
               console.dir(JSON.stringify(message));
           }
@@ -95,6 +99,11 @@ class CroquetiaMessageBroker {
   private async handleColorPickerDataSource(message: dataSources.ColorPickerDataSource): Promise<void> {
     console.dir(`test data source: ${message.data.hue}`);
     await this.firestorm.setVars({'colorHue': message.data.hue});
+  }
+
+  private async handleProgramNameDataSource(message: dataSources.ProgramNameDataSource): Promise<void> {
+    console.dir(`program name data source: ${message.data.programName}`);
+    await this.firestorm.setProgramName(message.data.programName);
   }
 }
 
