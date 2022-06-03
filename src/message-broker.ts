@@ -32,20 +32,14 @@ class CroquetiaMessageBroker {
     );
 
     // Check that Firestorm is up and running.  This may want to be a poll eventually
-    const discoveries = await (async () => await this.firestorm.discover())();
-    console.log("discovered pixelblazes:");
-    console.log("-----------------------------");
-    for (const pixelblaze of discoveries) {
-      console.log(`${pixelblaze.name} : ${pixelblaze.address}`);
-    }
-    console.log("-----------------------------");
+    await this.handleDiscover();
 
     this.createServerListeners();
   }
 
   private createServerListeners(): void {
     this.wss.on("connection", (ws: WebSocket) => {
-        ws.on("message", (data) => {
+        ws.on("message", async (data) => {
           const message = JSON.parse(data.toString());
           if (!message.source) {
             console.error(`message ${JSON.stringify(message)} is not a valid data source`)
@@ -63,6 +57,8 @@ class CroquetiaMessageBroker {
             // TODO this should be a field, not a data source.  
             case "programname":
               return this.handleProgramNameDataSource(message);
+            case "discover":
+              return (await this.handleDiscover());
             default:
               console.dir(JSON.stringify(message));
           }
@@ -72,6 +68,16 @@ class CroquetiaMessageBroker {
       this.wss.on("close", () => {
         console.log("closing server");
       });
+  }
+
+  private async handleDiscover(): Promise<void> {
+    const discoveries = await (async () => await this.firestorm.discover())();
+    console.log("discovered pixelblazes:");
+    console.log("-----------------------------");
+    for (const pixelblaze of discoveries) {
+      console.log(`${pixelblaze.name} : ${pixelblaze.address}`);
+    }
+    console.log("-----------------------------");
   }
 
   private async handleStartGame(): Promise<void> {
