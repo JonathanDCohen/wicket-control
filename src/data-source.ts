@@ -1,7 +1,7 @@
 /**
  * Definitions of external data sources
  */
-export type DataSource = {
+export interface DataSource {
   source: string;
   data?: {
     [k: string]: Object;
@@ -9,24 +9,24 @@ export type DataSource = {
 };
 
 // An example data source where the hue value for the strip is sent.
-export type ColorPickerDataSource = {
+export interface ColorPickerDataSource extends DataSource {
   source: 'colorpicker',
   data: {
     hue: number
   }
 }
 
-export function colorPickerDataSource(field: number): ColorPickerDataSource {
+export function colorPickerDataSource(hue: number): ColorPickerDataSource {
   return {
     source: 'colorpicker',
     data: {
-      hue: field
+      hue
     }
   };
 }
 
 // TODO this isn't right but it works for now
-export type ProgramNameDataSource = {
+export interface ProgramNameDataSource extends DataSource {
   source: 'programname',
   data: {
     programName: string
@@ -74,25 +74,25 @@ type SoundDataSource = {
 //   }
 // }
 
-// other game events may not need associated data
+export enum CroquetEvent {
+  GameStarted = "gamestarted",
+  HalfwayPointReached = "halfwaypointreached",
+  EndWicketReached = "endwicketreached",
+}
 
-// This could be sent from the modified Firestorm server's UI?
-export function GameStarted() {
-  return {
-    source: "gamestarted",
+interface CroquetEventDataSource extends DataSource {
+  source: "croquet"
+  data: {
+    event: CroquetEvent;
   };
 }
 
-export function HalfwayPointReached() {
+export function makeCroquetEvent(event: CroquetEvent): CroquetEventDataSource {
   return {
-    source: "halfwaypointreached",
-  };
-}
-
-// note this isn't 'GameEndedDataSource'.  The server can determine that itself
-export function EndWicketReached() {
-  return {
-    source: "endwicketreached",
+    source: "croquet",
+    data: {
+      event
+    }
   };
 }
 
