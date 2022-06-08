@@ -80,7 +80,7 @@ export enum CroquetEvent {
   EndWicketReached = "endwicketreached",
 }
 
-interface CroquetEventDataSource extends DataSource {
+export type CroquetEventDataSource = {
   source: "croquet"
   data: {
     event: CroquetEvent;

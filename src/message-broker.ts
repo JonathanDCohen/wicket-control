@@ -7,7 +7,7 @@ import "dotenv/config";
 import { WebSocketServer, WebSocket } from "ws";
 
 import { Firestorm } from "./firestorm.js";
-import * as dataSources from "./data-source.js";
+import * as ds from "./data-source.js";
 
 type Wicket = {
   ws: WebSocket;
@@ -47,23 +47,18 @@ class CroquetiaMessageBroker {
   private createServerListeners(): void {
     this.wss.on("connection", (ws: WebSocket) => {
         ws.on("message", async (data) => {
-          const message = JSON.parse(data.toString());
+          const message = JSON.parse(data.toString()) as ds.DataSource;
           if (!message.source) {
             console.error(`message ${JSON.stringify(message)} is not a valid data source`)
           }
           switch (message.source) {
-            // TODO the game specific ones should come from "game" source and the events should be data fields
-            case "gamestarted":
-                return this.handleStartGame();
-            case "halfwaypointreached":
-              return this.handleHalfwayPointReached();
-            case "endwicketreached":
-              return this.handleEndWicketReached();
+            case "croquet":
+              return this.handleCroquetEvent((message as ds.CroquetEventDataSource));
             case "colorpicker":
-              return this.handleColorPickerDataSource(message);
+              return this.handleColorPickerDataSource(message as ds.ColorPickerDataSource);
             // TODO this should be a field, not a data source.  
             case "programname":
-              return this.handleProgramNameDataSource(message);
+              return this.handleProgramNameDataSource(message as ds.ProgramNameDataSource);
             case "discover":
               return (await this.handleDiscover());
             default:
@@ -94,34 +89,38 @@ class CroquetiaMessageBroker {
     return wickets;
   }
 
-  private async handleStartGame(): Promise<void> {
-    this.gameActive = true;
-    console.dir('Game started!');
-    await this.firestorm.setVars({'colorHue': 0});
-  }
-
-  private async handleHalfwayPointReached(): Promise<void> {
-    console.dir('Halfway point reached!');
-    await this.firestorm.setVars({'colorHue': 1/3});
-  }
-
-  private async handleEndWicketReached(): Promise<void> {
-    if (this.gameActive) {
-      console.dir('You win!');
-      this.gameActive = false;
-      await this.firestorm.setVars({'colorHue': 2/3});
-    } else {
-      console.dir('Booped the end wicket.');
-      await this.firestorm.setVars({'colorHue': 1});
+  private async handleCroquetEvent(message: ds.CroquetEventDataSource) {
+    const event = message.data.event;
+    const Events = ds.CroquetEvent;
+    switch(event) {
+      case Events.GameStarted:
+        this.gameActive = true;
+        console.dir('Game started!');
+        await this.firestorm.setVars({'colorHue': 0});
+        return;
+      case Events.HalfwayPointReached:
+        console.dir('Halfway point reached!');
+        await this.firestorm.setVars({'colorHue': 1/3});
+        return;
+      case Events.EndWicketReached:
+        if (this.gameActive) {
+          console.dir('You win!');
+          this.gameActive = false;
+          await this.firestorm.setVars({'colorHue': 2/3});
+        } else {
+          console.dir('Booped the end wicket.');
+          await this.firestorm.setVars({'colorHue': 1});
+        }
+        return;
     }
   }
 
-  private async handleColorPickerDataSource(message: dataSources.ColorPickerDataSource): Promise<void> {
+  private async handleColorPickerDataSource(message: ds.ColorPickerDataSource): Promise<void> {
     console.dir(`test data source: ${message.data.hue}`);
     await this.firestorm.setVars({'colorHue': message.data.hue});
   }
 
-  private async handleProgramNameDataSource(message: dataSources.ProgramNameDataSource): Promise<void> {
+  private async handleProgramNameDataSource(message: ds.ProgramNameDataSource): Promise<void> {
     console.dir(`program name data source: ${message.data.programName}`);
     await this.firestorm.setProgramName(message.data.programName);
   }
