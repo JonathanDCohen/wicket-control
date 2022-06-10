@@ -1,5 +1,6 @@
 /**
  * Definitions of external data sources
+ * TODO change this to union typing as in https://www.typescriptlang.org/docs/handbook/unions-and-intersections.html#discriminating-unions
  */
 export interface DataSource {
   source: string;

@@ -9,25 +9,11 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Firestorm } from "./firestorm.js";
 import * as ds from "./data-source.js";
 
-type Wicket = {
-  ws: WebSocket;
-  address: string;
-  id: number;
-  name: string;
-}
-
-class DataSourceError extends Error {
-  constructor(public reason: string) {
-    super(reason);
-  }
-}
-
 class CroquetiaMessageBroker {
   // This logic may eventually want to be in a game controller which uses the message broker
   private gameActive = false;
   private wss: WebSocketServer = null;
   private firestorm: Firestorm = null;
-  private wickets: Wicket[] = [];
 
   async init(): Promise<void> {
     this.wss = new WebSocketServer({
@@ -38,8 +24,9 @@ class CroquetiaMessageBroker {
       parseInt(process.env.FIRESTORM_PORT)
     );
 
-    // Check that Firestorm is up and running.  This may want to be a poll eventually
-    this.wickets = await this.handleDiscover();
+    // Check that Firestorm is up and running.  This may want to be a poll eventually.
+    // TODO poll and error handling / real orchestration.
+    await this.handleDiscover();
 
     this.createServerListeners();
   }
@@ -72,21 +59,14 @@ class CroquetiaMessageBroker {
       });
   }
 
-  private async handleDiscover(): Promise<Wicket[]> {
+  private async handleDiscover(): Promise<void> {
     const discoveries = await (async () => await this.firestorm.discover())();
-    const wickets = discoveries.map(d => { return {
-      ws: new WebSocket(d.address),
-      address: d.address,
-      id: d.id,
-      name: d.name,
-    }});
     console.log("discovered pixelblazes:");
     console.log("-----------------------------");
-    for (const pixelblaze of wickets) {
+    for (const pixelblaze of discoveries) {
       console.log(`${pixelblaze.name} : ${pixelblaze.address}`);
     }
     console.log("-----------------------------");
-    return wickets;
   }
 
   private async handleCroquetEvent(message: ds.CroquetEventDataSource) {
