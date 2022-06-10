@@ -2,6 +2,7 @@
  * Accepts incoming data messages, translates to Pixelblaze, and sends out to wickets.
  * Handles wicket discovery.
  */
+ import { createServer, Server } from 'http';
 
 import "dotenv/config";
 import { WebSocketServer, WebSocket } from "ws";
@@ -12,12 +13,14 @@ import * as ds from "./data-source.js";
 class CroquetiaMessageBroker {
   // This logic may eventually want to be in a game controller which uses the message broker
   private gameActive = false;
+  private http: Server = null;
   private wss: WebSocketServer = null;
   private firestorm: Firestorm = null;
 
   async init(): Promise<void> {
+    this.http = createServer();
     this.wss = new WebSocketServer({
-      port: parseInt(process.env.BROKER_PORT),
+      server: this.http,
     });
     this.firestorm = new Firestorm(
       process.env.FIRESTORM_HOSTNAME,
@@ -28,10 +31,11 @@ class CroquetiaMessageBroker {
     // TODO poll and error handling / real orchestration.
     await this.handleDiscover();
 
-    this.createServerListeners();
+    this.createWebsocketListeners();
+    this.http.listen(process.env.BROKER_PORT);
   }
 
-  private createServerListeners(): void {
+  private createWebsocketListeners(): void {
     this.wss.on("connection", (ws: WebSocket) => {
         ws.on("message", async (data) => {
           const message = JSON.parse(data.toString()) as ds.DataSource;
@@ -54,9 +58,9 @@ class CroquetiaMessageBroker {
         });
       });
   
-      this.wss.on("close", () => {
-        console.log("closing server");
-      });
+    this.wss.on("close", () => {
+      console.log("closing server");
+    });
   }
 
   private async handleDiscover(): Promise<void> {
