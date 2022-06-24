@@ -10,14 +10,20 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Firestorm } from "./firestorm.js";
 import * as ds from "./data-source.js";
 
+// TODO hold vars to be set by external data sources and sent as often as possible over HTTP to Firestorm
 class CroquetiaMessageBroker {
   // This logic may eventually want to be in a game controller which uses the message broker
   private gameActive = false;
   private http: Server = null;
   private wss: WebSocketServer = null;
   private firestorm: Firestorm = null;
+  private dragonstaffPixels: number[][] = [];
+  /** Maps each array in dragonstaffPixels to an id */
+  private pixelMapping: {[idx: number]: number};
+  private sendInterval: NodeJS.Timer = null;
+  private sendPeriodSecs = 0.1;
 
-  async init(): Promise<void> {
+  async start(): Promise<void> {
     this.http = createServer();
     this.wss = new WebSocketServer({
       server: this.http,
@@ -52,6 +58,16 @@ class CroquetiaMessageBroker {
               return this.handleProgramNameDataSource(message as ds.ProgramNameDataSource);
             case "discover":
               return (await this.handleDiscover());
+            case "dragonstaff":
+              this.dragonstaffPixels = (message as ds.DragonStaffDataSource).data.pixels;
+              return;
+            case "start":
+              this.sendInterval = setInterval(() => {
+                this.sendPixels();
+              }, this.sendPeriodSecs);
+              return;
+            case "stop":
+              clearInterval(this.sendInterval);
             default:
               console.dir(JSON.stringify(message));
           }
@@ -104,10 +120,16 @@ class CroquetiaMessageBroker {
     await this.firestorm.setVars({'colorHue': message.data.hue});
   }
 
+  private async sendPixels() {
+    // TODO make this work for multiple pixelblazes -- we will have to separate by id
+    console.log(ds.hsvToPixelblaze(this.dragonstaffPixels))
+    await this.firestorm.setVars(ds.hsvToPixelblaze(this.dragonstaffPixels));
+  }
+
   private async handleProgramNameDataSource(message: ds.ProgramNameDataSource): Promise<void> {
     console.dir(`program name data source: ${message.data.programName}`);
     await this.firestorm.setProgramName(message.data.programName);
   }
 }
 
-new CroquetiaMessageBroker().init();
+new CroquetiaMessageBroker().start();

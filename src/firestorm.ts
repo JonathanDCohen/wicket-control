@@ -10,6 +10,11 @@ class HTTPResponseError extends Error {
   }
 }
 
+/**
+ * 
+ * @param response 
+ * @returns Returns the response if its ok or throw
+ */
 function checkStatus(response: FetchResponse) {
   if (response.ok) {
     return response;
@@ -43,7 +48,7 @@ type DiscoveryJSON = {
 /**
  * The API response to GET /discover
  */
-type DiscoverResponseJSON = DiscoveryJSON[];
+export type DiscoverResponseJSON = DiscoveryJSON[];
 
 type CommandJSON = {
   [k: string]: any;
@@ -89,15 +94,15 @@ export class Firestorm {
     return discoveries;
   }
 
-  public async setVars(vars: {[k: string]: any}): Promise<void> {
+  public async setVars(vars: {[k: string]: any}, ids?: number[]): Promise<FetchResponse> {
     return this.sendCommand({
       "setVars": {
         ...vars
       }
-    });
+    }, ids);
   }
 
-  public async setProgramName(programName: string): Promise<void> {
+  public async setProgramName(programName: string): Promise<FetchResponse> {
     return this.sendCommand({
       programName
     });
@@ -109,7 +114,7 @@ export class Firestorm {
    * @param ids If present, the ids of the Pixelblazes to send the command to.  Defaults to every known Pixelblaze.
    * @returns 
    */
-  public async sendCommand(command: CommandJSON, ids?: number[]): Promise<void> {
+  public async sendCommand(command: CommandJSON, ids?: number[]): Promise<FetchResponse> {
     return this.command({
       command,
       ids: ids ?? this.discoveredPixelblazeIds
@@ -120,7 +125,7 @@ export class Firestorm {
    * Low level interface which passes through JSON
    * @param command The request body passed through to each PixelBlaze and the list of Pixelblazes to pass to
    */
-  private async command(command: CommandRequestJSON): Promise<void> {
+  private async command(command: CommandRequestJSON): Promise<FetchResponse> {
     console.log('command', JSON.stringify(command))
     const response = await fetch(
       `${this.firestormUrl()}/command`,
@@ -132,7 +137,7 @@ export class Firestorm {
         }
       }
     );
-    checkStatus(response);
+    return checkStatus(response);
   }
 
 

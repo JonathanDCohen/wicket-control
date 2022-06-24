@@ -66,14 +66,38 @@ type SoundDataSource = {
   }
 }
 
-// type DragonStaffDataSource = {
-//   source: 'dragonstaff',
-//   data: {
-//     position: number[]
-//     angularMomentum: number[]
-//     ...
-//   }
-// }
+export interface DragonStaffDataSource extends DataSource {
+  source: 'dragonstaff';
+  data: {
+    pixels: number[][];
+  }
+}
+
+export function dragonStaffDataSource(pixels: number[][]): DragonStaffDataSource {
+ return {
+   source: 'dragonstaff',
+   data: {
+     pixels
+   }
+ }
+}
+
+/**
+ * An array of (h,s,v) values for one pixelblaze.  SetVars only supports 1-D arrays so
+ * we flatten the pixel values.
+ */
+export type PixelblazePixelDataSink = {
+  pixels: number[];
+}
+
+/**
+ * 
+ * @param pixels2d The sequence of HSV values per pixel per LED display
+ * @returns An array of [H0, S0, V0, H1, S1, V1, ...] suitable for passing to setVars
+ */
+export function hsvToPixelblaze(pixelsHSV: number[][]): PixelblazePixelDataSink {
+  return {pixels: pixelsHSV.flat()};
+}
 
 export enum CroquetEvent {
   GameStarted = "gamestarted",
